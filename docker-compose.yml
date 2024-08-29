@@ -15,3 +15,6 @@ services:
 
   proxy:
    image: nginx:mainline
+
+  postgres:
+   image: postgres:latest
