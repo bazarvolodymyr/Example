@@ -7,14 +7,14 @@ services:
       context: .
       dockerfile: Example/Dockerfile
 
-  client:
-    image: client
-    build:
-        context: ./example-client
-        dockerfile: Dockerfile
+  # client:
+  #   image: client
+  #   build:
+  #       context: ./example-client
+  #       dockerfile: Dockerfile
 
-  proxy:
-   image: nginx:mainline
+  # proxy:
+  #  image: nginx:mainline
 
   postgres:
    image: postgres:latest

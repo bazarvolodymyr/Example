@@ -15,18 +15,18 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
 
-  client:
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-      - WDS_SOCKET_PORT=0
-    ports:
-      - "5002:3000" 
+  # client:
+  #   environment:
+  #     - CHOKIDAR_USEPOLLING=true
+  #     - WDS_SOCKET_PORT=0
+  #   ports:
+  #     - "5002:3000" 
     
-  proxy:
-     volumes:
-       - ./nginx.conf:/etc/nginx/nginx.conf
-     ports:
-       - "80:80"
+  # proxy:
+  #    volumes:
+  #      - ./nginx.conf:/etc/nginx/nginx.conf
+  #    ports:
+  #      - "80:80"
 
   postgres:
      ports:
