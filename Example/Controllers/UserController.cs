@@ -1,8 +1,8 @@
-﻿using DAL.EF;
+﻿using AppServices.Interface;
 using DAL.Repository.Interface;
+using Example.Contracts.User;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Models.Entities;
-using System.ComponentModel.DataAnnotations;
 
 namespace Example.Controllers
 {
@@ -10,35 +10,50 @@ namespace Example.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        IUserRepo _userRepo;
-        public UsersController(IUserRepo userRepo) 
+        private readonly IUserRepo _userRepo;
+        private readonly IUserServices _userServices;
+        private readonly HttpContext _httpContext;
+
+        public UsersController(IUserRepo userRepo,
+                                IUserServices userServices,
+                                IHttpContextAccessor httpContext) 
         { 
             _userRepo = userRepo;
+            _userServices = userServices;
+            _httpContext = httpContext.HttpContext;
         }
         [HttpGet]
+        [Authorize]
         public IActionResult GetUsers()
         {
             return Ok(_userRepo.GetAll());
         }
-        
-        [HttpPost]
-        public ActionResult AddOne(User entity)
+
+        [HttpPost("Register")]
+        public ActionResult Register(RegisterUserRequest userRequest)
         {
-            //var newUser = new User { Name = entity.Name };
+            _userServices.Register(userRequest.UserName, userRequest.Password, userRequest.Email);
+            return Ok();
+
+        }
+        [HttpPost("Login")]
+        public ActionResult Login(LoginUserRequest loginUser)
+        {
             try
             {
-                _userRepo.Add(entity);
+                var token = _userServices.Login(loginUser.Email, loginUser.Password);
+                _httpContext.Response.Cookies.Append("secretCookies", token);
+                return Ok(token);
             }
-            catch (Exception ex)
+            catch
             {
-                return BadRequest(ex);
+                return BadRequest("Failed to login");
             }
-            return CreatedAtAction(nameof(FindUsers), new { id = entity.Id }, entity);
             
         }
         [HttpGet]
         [Route("{id}")]
-        public IActionResult FindUsers(int id)
+        public IActionResult FindUsers(Guid id)
         {
             return Ok(_userRepo.Find(id));
         }
